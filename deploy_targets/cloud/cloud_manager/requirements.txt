@@ -1,0 +1,13 @@
+aiodocker
+aiohttp
+fastapi
+PyYAML
+sqlmodel
+uvicorn
+yarl
+
+# GCP integration
+google-cloud-run
+
+# AWS integration
+boto3
