@@ -1,3 +1,4 @@
+FROM ubuntu:20.04
 
 FROM node:16-alpine AS builder
 
@@ -8,6 +9,7 @@ RUN npm install
 RUN npm run build
 # ============================================================
 
+#FROM python:3.10
 FROM python:3.10
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -20,7 +22,7 @@ COPY base_model_data.json ./
 RUN pip install -r requirements.txt
 
 RUN apt-get update
-RUN apt-get -y install libgl1-mesa-glx
+RUN apt-get -y install libgl1
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \  
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz

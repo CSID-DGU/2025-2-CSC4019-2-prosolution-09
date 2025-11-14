@@ -1,3 +1,4 @@
+FROM ubuntu:20.04
 
 # --------- Frontend : base-NodeJS, React ----------
 FROM node:20-alpine AS builder
@@ -27,12 +28,12 @@ ENV CUDA_LAUNCH_BLOCKING=1
 
 # RUN apt-get update
 # RUN apt-get upgrade -y
-# RUN apt-get -y install libgl1-mesa-glx
+# RUN apt-get -y install libgl1
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get update --allow-releaseinfo-change || true && \
     apt-get upgrade -y && \
-    apt-get -y install libgl1-mesa-glx
+    apt-get -y install libgl1
 # RUN apt-get install libusb-1.0-0
 # RUN apt-get install edgetpu-compiler
 # RUN curl -fsSL https://ollama.com/install.sh | sh

@@ -5,7 +5,7 @@ ENV PIP_DEFAULT_TIMEOUT=1000
 FROM msranni/nni
 
 RUN apt-get update
-RUN apt-get -y install libgl1-mesa-glx
+RUN apt-get -y install libgl1
 #RUN apt-get install -y postgresql postgresql-contrib
 
 WORKDIR /source

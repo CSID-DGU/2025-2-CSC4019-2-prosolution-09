@@ -3,7 +3,7 @@ WORKDIR /app
 RUN pip3 install --upgrade pip
 
 RUN apt-get update
-RUN apt-get install -y vim vlc libgl1-mesa-glx 
+RUN apt-get install -y vim vlc libgl1 
 
 RUN pip install --upgrade pip
 RUN pip install cython

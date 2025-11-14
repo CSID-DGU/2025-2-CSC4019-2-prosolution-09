@@ -11,7 +11,7 @@ FROM nvcr.io/nvidia/pytorch:21.08-py3
 # Required packages
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update -y && \
-    apt install -y zip htop screen libgl1-mesa-glx && \
+    apt install -y zip htop screen libgl1 && \
     apt install -y curl git vim wget tar zip unzip jq && \
     apt clean && rm -rf /var/lib/apt/lists/ && rm -rf /root/.cache && rm -rf /tmp/*
 RUN pip install --no-cache-dir seaborn thop

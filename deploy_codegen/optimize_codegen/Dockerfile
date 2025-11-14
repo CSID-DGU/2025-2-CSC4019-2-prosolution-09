@@ -1,4 +1,7 @@
+FROM ubuntu:20.04
+
 #FROM python:3.8
+#FROM python:3.10
 FROM python:3.10
 
 ENV CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=ON"
@@ -9,7 +12,7 @@ RUN pip3 install --upgrade pip
 # RUN apt-get install -y build-essential git libprotoc-dev protobuf-compiler 
 RUN git init
 RUN git update-ref -d HEAD
-RUN pip3 install "pybind11[golbal]"
+RUN pip3 install "pybind11[global]"
 RUN pip3 install tensorflow tf_keras  tensorflow-datasets
 RUN pip3 install onnx2tf==1.20
 RUN pip3 install onnx onnx-simplifier  onnx_graphsurgeon
@@ -17,7 +20,8 @@ RUN pip3 install sng4onnx numpy
 RUN pip3 install tvm
 RUN pip3 install decorator
 RUN pip3 install ninja
-RUN apt-get install -y libtinfo-dev libncurses5
+RUN apt-get install -y libtinfo-dev libncurses6
+#5 -> 6
 
 WORKDIR /app
 COPY . /app
@@ -37,7 +41,7 @@ RUN pip3 install torch
 # RUN pip3 install tensorflow==2.13.1
 RUN pip3 install seaborn pandas torchvision
 RUN pip3 install --upgrade attrs psutil
-RUN apt-get install -y libgl1-mesa-glx 
+RUN apt-get install -y libgl1 
 RUN apt-get install -y vim sed 
 RUN apt-get install -y clang 
 RUN apt-get install -y unzip 
@@ -120,7 +124,7 @@ RUN echo '\n\
 
 #install android sdk
 ENV FORMAT=float32
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/
 ENV ANDROID_SDK_ROOT=/app/android_sdk
 ENV ANDROID_HOME=/app/android_sdk
 ENV GRADLE_HOME=/app/android_sdk/gradle-8.3
@@ -134,11 +138,13 @@ RUN pip3 install opencv-python
 RUN pip3 install defusedxml
 RUN pip3 install matplotlib
 
-RUN apt-get install software-properties-common -y
+#RUN apt-get update && apt-get install -y software-properties-common
+#데비안13부터 필요없음?
 # added by khlee to fix build error
 RUN apt-get install python3-launchpadlib -y
-RUN add-apt-repository ppa:openjdk-r/ppa
-RUN apt-get install -y openjdk-17-jdk
+#RUN add-apt-repository ppa:openjdk-r/ppa
+RUN apt-get update && apt-get install -y openjdk-21-jdk
+#RUN apt-get install -y openjdk-17-jdk
 WORKDIR /app
 RUN mkdir android_sdk
 WORKDIR /app/android_sdk

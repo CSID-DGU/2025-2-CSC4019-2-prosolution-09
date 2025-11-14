@@ -145,9 +145,18 @@ module.exports = env => {
     module: {
       rules: [
         {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: "babel-loader"
+          test: /\.(js|jsx)$/,
+          exclude: /node_modules\/(?!react-draggable)/, // 수정됨 react-draggable만 예외
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env", "@babel/preset-react"],
+              plugins: [
+                "@babel/plugin-proposal-optional-chaining",
+                "@babel/plugin-proposal-nullish-coalescing-operator"
+              ]
+            }
+          }
         },
         // Modular Styles
         {

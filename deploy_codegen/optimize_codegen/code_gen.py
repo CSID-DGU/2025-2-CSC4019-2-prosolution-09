@@ -751,7 +751,7 @@ class CodeGen:
         if (self.m_deploy_type == 'cloud' or self.m_deploy_type == 'kt_cloud' 
             or self.m_deploy_type == 'aws' or self.m_deploy_type == 'gcp' or self.m_deploy_type == 'pc_server'):
             self.m_sysinfo_libs = ['python==3.8', 'torch>=1.1.0']
-            self.m_sysinfo_apt = ['vim', 'libgl1-mesa-glx']
+            self.m_sysinfo_apt = ['vim', 'libgl1']
             self.m_sysinfo_papi = ["cython", "numpy<17", "imutils", "flask",
                 "opencv-python", "opencv-contrib-python", 
                 "imageio", "pyyaml", "matplotlib", "pandas", 
@@ -843,7 +843,7 @@ class CodeGen:
             outf.close()
         elif self.m_deploy_type == 'k8s':
             self.m_sysinfo_libs = ['python==3.8', 'torch>=1.1.0']
-            self.m_sysinfo_apt = ['vim', 'libgl1-mesa-glx']
+            self.m_sysinfo_apt = ['vim', 'libgl1']
             self.m_sysinfo_papi = ["cython", "numpy<17", "imutils", "flask",
                 "opencv-python", "opencv-contrib-python", 
                 "imageio", "pyyaml", "matplotlib", "pandas", 
@@ -1079,7 +1079,7 @@ class CodeGen:
         if (self.m_deploy_type == 'cloud' or self.m_deploy_type == 'kt_cloud' 
             or self.m_deploy_type == 'aws' or self.m_deploy_type == 'gcp' or self.m_deploy_type == 'pc_server'):
             self.m_sysinfo_libs = ['python==3.8']
-            self.m_sysinfo_apt = ['vim', 'tensorrt', 'libgl1-mesa-glx']
+            self.m_sysinfo_apt = ['vim', 'tensorrt', 'libgl1']
             self.m_sysinfo_papi = ["cython", "numpy<17", "imutils", "flask",
                 "opencv-python", "opencv-contrib-python", 
                 "imageio", "pyyaml", "matplotlib", "pandas", "tqdm", 
@@ -1183,7 +1183,7 @@ class CodeGen:
             onnx_path = "%s%s" % (self.m_current_file_path, self.m_nninfo_weight_onnx_file)
             os.system("cp  %s  %s" % (onnx_path, k8s_path))
             self.m_sysinfo_libs = ['python==3.8']
-            self.m_sysinfo_apt = ['vim', 'tensorrt', 'libgl1-mesa-glx']
+            self.m_sysinfo_apt = ['vim', 'tensorrt', 'libgl1']
             self.m_sysinfo_papi = ["cython", "numpy<17", "imutils", "flask",
                 "opencv-python", "opencv-contrib-python", 
                 "imageio", "pyyaml", "matplotlib", 
@@ -1278,7 +1278,7 @@ class CodeGen:
             os.system("cp %s %s" % (outpath, k8s_path)) 
         else: # ondevice no need web 
             self.m_sysinfo_libs = ['python==3.8']
-            self.m_sysinfo_apt = ['vim', 'tensorrt', 'libgl1-mesa-glx']
+            self.m_sysinfo_apt = ['vim', 'tensorrt', 'libgl1']
             self.m_sysinfo_papi = ["cython", "numpy<17", "imutils", "flask",
                 "opencv-python", "opencv-contrib-python", 
                 "imageio", "pyyaml",  "matplotlib", 

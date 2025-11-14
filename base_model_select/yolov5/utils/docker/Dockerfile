@@ -10,7 +10,7 @@ RUN rm -rf /opt/pytorch  # remove 1.2GB dir
 ADD https://ultralytics.com/assets/Arial.ttf https://ultralytics.com/assets/Arial.Unicode.ttf /root/.config/Ultralytics/
 
 # Install linux packages
-RUN apt update && apt install --no-install-recommends -y zip htop screen libgl1-mesa-glx
+RUN apt update && apt install --no-install-recommends -y zip htop screen libgl1
 
 # Install pip packages
 COPY requirements.txt .
