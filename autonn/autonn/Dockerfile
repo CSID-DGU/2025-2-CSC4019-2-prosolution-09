@@ -78,8 +78,8 @@ RUN pip install -r requirements.txt
 
 # # llm --------------------------------------------------------------------------
 # RUN pip install beautifulsoup4
-# RUN pip install numpy>=1.22.0
-# RUN pip install pandas>=1.3.0
+# RUN pip install numpy<2
+# RUN pip install pandas>=1.4.2
 # RUN pip install pydantic>=2.0
 # RUN pip install typing-extensions>=4.5.0
 # RUN pip install git-lfs==1.6
@@ -112,8 +112,8 @@ RUN pip install chromadb>=0.4.0 --no-deps
 
 RUN pip install albumentations==1.0.3 --no-binary qudida,albumentations
 # RUN pip install numpy==1.23.5
-
-
+RUN pip install --force-reinstall "numpy<2"
+RUN pip install openai
 
 COPY . .
 

@@ -17,6 +17,7 @@ from langchain_community.document_loaders import WebBaseLoader
 # from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
+from openai import OpenAI
 
 def load_and_retrieve_docs(url, emb_model):
     '''
@@ -37,6 +38,46 @@ def load_and_retrieve_docs(url, emb_model):
     embeddings = OllamaEmbeddings(model=emb_model, base_url=OLLAMA_URL) #"mxbai-embed-large"
     vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
     return vectorstore.as_retriever()
+
+def load_and_retrieve_docs_with_gpt(url, emb_model):
+    
+    client = OpenAI(api_key = key)
+    
+    
+    loader = WebBaseLoader(
+        web_paths=(url,),
+        bs_kwargs=dict() 
+    )
+    docs = loader.load()
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    all_text = "\n".join([doc.page_content for doc in docs])
+    
+    prompt=f"""Summarize the following document for RAG use.
+    Rules:
+    - Key overview
+    - Purpose/intent
+    - Main features/components
+    - Important concepts within the document
+    - Format/data structure
+    - Divide into short chunks suitable for RAG indexing
+    document content:
+    -------
+    {all_text}
+    -------
+    """
+    response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}]
+    )
+    answer = response.choices[0].message.content
+    
+    splits = text_splitter.split_text(answer)
+    import os
+    OLLAMA_URL = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    embeddings = OllamaEmbeddings(model=emb_model, base_url=OLLAMA_URL) #"mxbai-embed-large"
+    vectorstore = Chroma.from_texts(texts=splits, embedding=embeddings)
+    return vectorstore.as_retriever()
+
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)

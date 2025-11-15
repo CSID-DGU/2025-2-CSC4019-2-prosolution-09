@@ -31,7 +31,8 @@ from tangochat.inference.generate import (
     GeneratorArgs
 )
 from tangochat.tuner.rag import (
-    load_and_retrieve_docs, 
+    load_and_retrieve_docs,
+    load_and_retrieve_docs_with_gpt,
     get_rag_formatted_prompt,
 )
 import ollama
@@ -157,11 +158,11 @@ def switch_ollama_model():
     if model_name is None:
         return
     st.session_state.brain['local_gen_obj'] = model_name
-    if st.session_state.rag['active']:
-        st.session_state.rag = {"active": False,
-                        "url": None,
-                        "embed": None,
-                        "retreiver": None,}
+    # if st.session_state.rag['active']:
+    #     st.session_state.rag = {"active": False,
+    #                     "url": None,
+    #                     "embed": None,
+    #                     "retreiver": None,}
     st.balloons()
     
     st.session_state['messages'] = start_state
@@ -370,7 +371,8 @@ with tab4:
                     _emb_model = st.session_state.rag['embed']
                     logger.info(f'embeddign model: {_emb_model}')
                     logger.info(f'url: {_url}')
-                    _retriever = load_and_retrieve_docs(_url, _emb_model)
+                    #_retriever = load_and_retrieve_docs(_url, _emb_model)
+                    _retriever = load_and_retrieve_docs_with_gpt(_url, _emb_model)
                     elapsed_time = time.time()-start
                     st.write(f"Done({elapsed_time:.2f} sec).")
                     st.session_state.rag['retriever'] = _retriever
@@ -506,7 +508,7 @@ if prompt := st.chat_input():
             prompt = get_rag_formatted_prompt(_retriever, prompt)
         else:
             st.warning("RAG가 활성화되어 있지만 retriever가 없습니다. 먼저 Retrieve를 눌러주세요.")
-
+    #LLM증강 RAG추가할곳
     user_message = {
         "role": "user",
         # "content": [{"type": "text",      # torch-style
