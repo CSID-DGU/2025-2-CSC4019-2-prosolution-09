@@ -94,10 +94,17 @@ services:
     shm_size: "256M"
     ipc: host
     command: >
-      sh -c "python manage.py makemigrations &&
-             python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8100 &
-             streamlit run /source/autonn_core/tangochat/browser.py --server.port 8101 --browser.gatherUsageStats false"
+              sh -c "
+              mkdir -p /root/.ollama &&
+              export OLLAMA_HOST=0.0.0.0:11434 &&
+              ollama serve &
+              sleep 2 &&
+              python manage.py makemigrations &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8100 &
+              streamlit run /source/autonn_core/tangochat/browser.py --server.port 8101 --browser.gatherUsageStats false
+              
+              "
     deploy:
       resources:
         reservations:
@@ -111,7 +118,8 @@ services:
                 - video
     environment:
       - NVIDIA_VISIBLE_DEVICES=${GPU_NUM:-all}
-      - OLLAMA_HOST=http://host.docker.internal:11434
+      #- OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_HOST=http://localhost:11434
     volumes:
       - ./autonn/autonn:/source
       - shared:/shared
@@ -121,6 +129,8 @@ services:
     ports:
       - "8100:8100" # visualizer (vision model)
       - "8101:8101" # streamlit  (llm)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   #---------------------------------
   # Base Model Selector
