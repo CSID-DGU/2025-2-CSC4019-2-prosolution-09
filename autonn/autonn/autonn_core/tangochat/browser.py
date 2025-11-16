@@ -529,10 +529,43 @@ with st.sidebar:
     )
     st.session_state.rag['url'] = _url
 
-    if st.button("🔍 Retrieve Documents", use_container_width=True):
+    
+    
+    col1, col2 = st.columns(2)
+
+    with col1:
+        retrieve_btn = st.button("🔍 Retrieve Documents", use_container_width=True)
+
+    with col2:
+        reinforced_retrieve_btn = st.button("🧠 Reinforced Retrieve", use_container_width=True)
+    
+    if retrieve_btn:
         if st.session_state.rag.get('embed') and _url:
             logger.info(f'Starting RAG retrieval from: {_url}')
             with st.status("Retrieving documents...", expanded=False) as sts2:
+                start = time.time()
+                import chromadb
+                _emb_model = st.session_state.rag['embed']
+                logger.info(f'Embedding model: {_emb_model}')
+                logger.info(f'URL: {_url}')
+                _retriever = load_and_retrieve_docs(_url, _emb_model)
+                elapsed_time = time.time() - start
+                st.write(f"✓ Completed in {elapsed_time:.2f}s")
+                st.session_state.rag['retriever'] = _retriever
+                st.session_state['messages'] = start_state
+                st.session_state.rag['active'] = True
+                switch_ollama_model()
+            sts2.update(label="✓ Documents retrieved", state="complete")
+        else:
+            if not st.session_state.rag.get('embed'):
+                st.warning("⚠️ Please select an embedding model first")
+            if not _url:
+                st.warning("⚠️ Please enter a URL")
+
+    if reinforced_retrieve_btn:
+        if st.session_state.rag.get('embed') and _url:
+            logger.info(f'Starting Reinforced RAG retrieval from: {_url}')
+            with st.status("Retrieving Reinforced documents...", expanded=False) as sts2:
                 start = time.time()
                 import chromadb
                 _emb_model = st.session_state.rag['embed']
@@ -545,7 +578,7 @@ with st.sidebar:
                 st.session_state['messages'] = start_state
                 st.session_state.rag['active'] = True
                 switch_ollama_model()
-            sts2.update(label="✓ Documents retrieved", state="complete")
+            sts2.update(label="✓ Reinforced Documents retrieved", state="complete")
         else:
             if not st.session_state.rag.get('embed'):
                 st.warning("⚠️ Please select an embedding model first")
@@ -650,8 +683,10 @@ for msg in st.session_state.messages:
             if msg['role'] == 'user' and "Context:" in msg['content'] and "Question:" in msg['content']:
                 parts = msg['content'].split("Question:")
                 if len(parts) > 1:
-                    context_part = parts[0].replace("Context:", "").strip()
-                    question_part = parts[1].strip()
+                    #context_part = parts[0].replace("Context:", "").strip()
+                    #question_part = parts[1].strip()
+                    question_part = parts[0].replace("Question:", "").strip()
+                    context_part = parts[1].replace("Context:", "").strip()
                     st.write(question_part)
                     with st.expander("📄 View RAG Context", expanded=False):
                         st.markdown(context_part)
@@ -675,7 +710,9 @@ if prompt := st.chat_input():
             if "Context:" in formatted_prompt and "Question:" in formatted_prompt:
                 parts = formatted_prompt.split("Question:")
                 if len(parts) > 1:
-                    context_part = parts[0].replace("Context:", "").strip()
+                    question_part = parts[0].replace("Question:", "").strip()
+                    context_part = parts[1].replace("Context:", "").strip()
+                    #context_part = parts[0].replace("Context:", "").strip()
                     rag_context = context_part
             prompt = formatted_prompt
         else:
