@@ -70,8 +70,9 @@ def load_and_retrieve_docs_with_gpt(url, emb_model):
     -------
     """
     response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": prompt}]
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=2000
     )
     answer = response.choices[0].message.content
     

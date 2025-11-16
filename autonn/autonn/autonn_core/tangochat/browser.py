@@ -360,7 +360,15 @@ with tab4:
             placeholder = "e.g. https://github.com/ML-TANGO/TANGO",
         )
         st.session_state.rag['url'] = _url
-        rt_btn = st.button("Retrieve", type='primary')
+        
+         # 두 개 버튼을 나란히 두기 위해 columns 사용
+        col1, col2 = st.columns(2)
+        with col1:
+            rt_btn = st.button("Retrieve", type='primary')
+        with col2:
+            reinforced_rt_btn = st.button("Reinforced Retrieve", type='primary')
+        
+        
         if rt_btn:
             if st.session_state.rag['active'] and _url is not None:
                 logger.info(f'Retreive button clicked!!!')
@@ -371,8 +379,7 @@ with tab4:
                     _emb_model = st.session_state.rag['embed']
                     logger.info(f'embeddign model: {_emb_model}')
                     logger.info(f'url: {_url}')
-                    #_retriever = load_and_retrieve_docs(_url, _emb_model)
-                    _retriever = load_and_retrieve_docs_with_gpt(_url, _emb_model)
+                    _retriever = load_and_retrieve_docs(_url, _emb_model)
                     elapsed_time = time.time()-start
                     st.write(f"Done({elapsed_time:.2f} sec).")
                     st.session_state.rag['retriever'] = _retriever
@@ -382,6 +389,23 @@ with tab4:
                 sts2.update(label=f"successfully retrieved.", state="complete")
             else:
                 logger.warning(f'Failed to retreive URL: rag active? {st.session_state.rag["active"]}, url? {_url}')
+        
+        if reinforced_rt_btn:
+            if st.session_state.rag['active'] and _url is not None:
+                logger.info(f'Reinforced Retrieve button clicked!!!')
+                with st.status("Reinforced Retrieving... ", expanded=False) as sts3:
+                    start = time.time()
+                    _emb_model = st.session_state.rag['embed']
+                    _retriever = load_and_retrieve_docs_with_gpt(_url, _emb_model)
+                    elapsed_time = time.time()-start
+                    st.write(f"Done({elapsed_time:.2f} sec).")
+                    st.session_state.rag['retriever'] = _retriever
+                    st.session_state['messages'] = start_state
+                    st.session_state.rag['active'] = True
+                    switch_ollama_model()
+                sts3.update(label=f"reinforced retrieve complete!", state="complete")
+        
+        
         if st.session_state.rag['active'] and _url is not None:
             st.text(f"TangoChat retrieves from")
             st.markdown(f"***{_url}***")
@@ -502,6 +526,7 @@ for msg in st.session_state.messages:
 
 # user message input -----------------------------------------------------------
 if prompt := st.chat_input():
+    question = prompt
     if st.session_state.rag['active']:
         _retriever = st.session_state.rag.get('retriever', None)
         if _retriever is not None:
@@ -535,7 +560,7 @@ if prompt := st.chat_input():
     st.session_state.messages.append(user_message)
 
     with st.chat_message("user"):
-        st.write(prompt)
+        st.write(question)
         # for img in image_prompts:
         #     st.image(img)
 
