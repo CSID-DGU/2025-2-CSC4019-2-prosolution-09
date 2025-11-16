@@ -119,6 +119,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=${GPU_NUM:-all}
       - OLLAMA_HOST=http://localhost:11434
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - ./autonn/autonn:/source
       - shared:/shared
