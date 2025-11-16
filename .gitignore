@@ -220,6 +220,3 @@ target_image_build/sql_app.db
 .env
 nul
 .claude/
-
-
-.env
