@@ -45,14 +45,182 @@ logger = logging.getLogger(__name__)
 # def run_tangochat():
 # page config ------------------------------------------------------------------
 st.set_page_config(
-    page_title="TANGO+Chat",
-    page_icon="💃",
+    page_title="TangoChat - LLMOps Platform",
+    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'About': "This is a part of TANGO project by ETRI."
+        'About': "TangoChat - LLMOps Platform by ETRI & Prosolution"
     }
 )
+
+# Custom CSS for enhanced dark theme with blue accents
+st.markdown("""
+<style>
+    /* Main container styling */
+    .stApp {
+        background-color: #0E1117;
+    }
+
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #1A1F2E;
+    }
+
+    /* Card-style containers */
+    .model-card {
+        background: linear-gradient(135deg, #1A1F2E 0%, #252B3D 100%);
+        border: 1px solid #1E88E5;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 10px 0;
+        box-shadow: 0 4px 6px rgba(30, 136, 229, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .model-card:hover {
+        border-color: #42A5F5;
+        box-shadow: 0 6px 12px rgba(30, 136, 229, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* Status indicators */
+    .status-active {
+        color: #4CAF50;
+        font-weight: 600;
+    }
+
+    .status-inactive {
+        color: #757575;
+    }
+
+    /* Title styling */
+    .main-title {
+        color: #1E88E5;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, #1E88E5 0%, #42A5F5 50%, #64B5F6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Section headers */
+    .section-header {
+        color: #1E88E5;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #1E88E5;
+    }
+
+    /* Button styling */
+    .stButton>button {
+        background: linear-gradient(90deg, #1E88E5 0%, #1976D2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        min-height: 2.5rem;
+        font-size: 0.875rem;
+    }
+
+    .stButton>button:hover {
+        background: linear-gradient(90deg, #1976D2 0%, #1565C0 100%);
+        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    }
+
+    /* Sidebar button adjustments */
+    [data-testid="stSidebar"] .stButton>button {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.75rem;
+        min-height: 1.8rem;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Sidebar column spacing */
+    [data-testid="stSidebar"] .element-container {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Progress indicators */
+    .stProgress > div > div {
+        background-color: #1E88E5;
+    }
+
+    /* Chat message styling */
+    .stChatMessage {
+        background-color: #1A1F2E;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    /* User message - right aligned with icon on right */
+    [data-testid="stChatMessageContent"]:has(+ [data-testid="chatAvatarIcon-user"]) {
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    .stChatMessage:has([data-testid="chatAvatarIcon-user"]) {
+        flex-direction: row-reverse;
+        background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+        margin-left: 20%;
+        margin-right: 0;
+    }
+
+    /* Assistant message - left aligned with icon on left */
+    .stChatMessage:has([data-testid="chatAvatarIcon-assistant"]) {
+        margin-left: 0;
+        margin-right: 20%;
+    }
+
+    /* System message styling */
+    .stChatMessage:has([data-testid="chatAvatarIcon-system"]) {
+        background: #252B3D;
+        border-left: 4px solid #1E88E5;
+    }
+
+    /* Model info display */
+    .model-info {
+        background: #1A1F2E;
+        border-left: 4px solid #1E88E5;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 4px;
+    }
+
+    /* Radio button styling */
+    .stRadio > label {
+        color: #FAFAFA;
+        font-weight: 500;
+    }
+
+    /* Text input styling */
+    .stTextInput > div > div > input {
+        background-color: #1A1F2E;
+        color: #FAFAFA;
+        border: 1px solid #1E88E5;
+        border-radius: 8px;
+    }
+
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: #1A1F2E;
+        border-radius: 8px;
+        color: #1E88E5;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # init -------------------------------------------------------------------------
 st.session_state.uploader_key = 0
@@ -66,11 +234,11 @@ def _update_uploader_key():
 start_state = [
     {
         "role": "system",
-        "content": "**Select an AI model you want** [:red[DOWNLOAD] > :blue[RUN] > :green[APPLY]]",
+        "content": "**Configure your AI model in the sidebar** → Download → Apply → Chat",
     },
     {
         "role": "assistant",
-        "content": "Welcome! How can I help you?"
+        "content": "Welcome to TangoChat! I'm ready to assist you. Please select a model from the sidebar to get started."
     },
 ]
 
@@ -168,263 +336,231 @@ def switch_ollama_model():
     st.session_state['messages'] = start_state
     for msg in st.session_state.messages:
         if msg['role'] == 'system':
-            m_name = lists_for_ollama[model_name].split("***")[1]
-            msg['content'] = f"Let's talk to **{m_name.upper()}** !!"
-            if m_name == 'LLaVA 1.6':
+            m_name = lists_for_ollama[model_name]
+            msg['content'] = f"**{m_name}** is now active and ready to chat!"
+            if 'LLaVA' in m_name:
                 st.session_state.img_prompt = 'visible'
 
-# middle top menu --------------------------------------------------------------
-# tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["**DOWNLOAD**", "**RUN**", "DELETE", "R-A-G", "FINETUNE", "DEPLOY"])
-# lists = [
-#             "***Llama2-7B-base***", 
-#             "***Llama2-7B-chat***", 
-#             "***Llama2-13B-chat***", 
-#             "***Llama2-70B-chat***", 
-#             "***Llama3-8B-base***", 
-#             "***Llama3-8B-instruct***", 
-#             "***Llama3-70B-instruct***", 
-#             "***Llama3.1-8B-base***", 
-#             "***Llama3.1-8B-instruct***", 
-#             "***Llama3.1-8B-instruct-tune***", 
-#             "***Llama3.1-70B-instruct***",
-#             "***Llama3.1-70B-instruct-tune***",
-#             "***CodeLlama-7B***", 
-#             "***CodeLlama-34B***",
-#             "***Mistral-7B-v0.1-base***", 
-#             "***Mistral-7B-v0.1-instruct***",
-#             "***Mistral-7B-v0.2-instruct***", 
-#             "***Open-Llama-7B***",
-#             "***Tiny-Llama-stories15M***", 
-#             "***Tiny-Llama-stories42M***",
-#             "***Tiny-Llama-stories110M***",
-#         ]
-tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["**DOWNLOAD**", "**RUN**", "**DELETE**", "**RAG**", "**FINETUNE**", "**DEPLOY**"])
+# Sidebar menu ----------------------------------------------------------------
 lists_for_ollama = {
-            "llama3.2"      : "***Llama 3.2***   (3B)",
-            "llama3.1"      : "***Llama 3.1***   (8B)",
-            "phi3.5"        : "***Phi 3.5***     (4B)",
-            "mistral"       : "***Mistral 0.3*** (7B)",
-            "neural-chat"   : "***Neural-Chat*** (7B)",
-            "codellama"     : "***CodeLlama***   (7B)",
-            "llava"         : "***LLaVA 1.6***   (8B)",
-            "gemma2"        : "***Gemma 2***     (9B)",
-            "qwen2.5"       : "***Qwen 2.5***    (7B)",
-            "bnksys/yanolja-eeve-korean-instruct-10.8b": "***EEVE Korean*** (11B)",
+            "llama3.2"      : "Llama 3.2 (3B)",
+            "llama3.1"      : "Llama 3.1 (8B)",
+            "phi3.5"        : "Phi 3.5 (4B)",
+            "mistral"       : "Mistral 0.3 (7B)",
+            "neural-chat"   : "Neural-Chat (7B)",
+            "codellama"     : "CodeLlama (7B)",
+            "llava"         : "LLaVA 1.6 (8B)",
+            "gemma2"        : "Gemma 2 (9B)",
+            "qwen2.5"       : "Qwen 2.5 (7B)",
+            "bnksys/yanolja-eeve-korean-instruct-10.8b": "EEVE Korean (11B)",
         }
-captions_for_ollama = [
-            "Meta: small",
-            "Meta: lastest",
-            "Microsoft",
-            "Mistral AI",
-            "Intel",
-            "Meta: coding",
-            "UW-Madison: vision",
-            "Google",
-            "Alibaba",
-            "Yanolja: 한국어",
-]
-embed_lists = {"mxbai-embed-large"  : "**MXBai-embed-large** (334M)",
-                "nomic-embed-text"  : "**Nomic-embed-text** (137M)",
-                "all-minilm"        : "**All-miniLM** (23M)",
-            }
-captions_embed = [
-    "MixedBread AI",
-    "Nomic AI",
-    "SBERT.net",
-]
 
-with tab1:
-    llm = st.radio(
-        "Download a model",
-        options=list(lists_for_ollama.keys()),
-        format_func=lambda x: lists_for_ollama[x],
-        captions=captions_for_ollama,
-        index=None,
-        horizontal=True,
-    )
-    loader_btn = st.button("Download", type="primary")
-    if loader_btn:
-        # model = llm.split("***")[1]
-        model = llm
-        # if st.session_state.token['hf_token'] == "":
-        #     st.warning("No cached token exists!")
-        #     get_token_and_login()
-        # else:
-        #     success = login_hf()
-        #     if not success:
-        #         st.warning(f"Cached token is not valid anymore!")
-        #         st.session_state.token['hf_token'] = ""
-        #         if os.path.isfile(hf_token_cache):
-        #             os.remove(hf_token_cache)
-        #         get_token_and_login()
-        #     else:
-        #         logger.info(f"\tStart downloading LLM:{model} from HuggingFace")
-        #         logger.info(f"\tHuggingFace Home is set to {HF_HOME}")
-        #         hf_token = st.session_state.token['hf_token'] 
-        #         download_model(str(model), MODEL_ROOT, hf_token)
-        with st.status("Downloading... ", expanded=True) as sts:
-            start = time.time()
-            ollama.pull(model)
-            elapsed_time = time.time()-start
-            st.write(f"Done({elapsed_time:.2f} sec).")
-        sts.update(label=f"{model} is successfully downloaded.", state="complete")
+model_providers = {
+    "llama3.2": "Meta",
+    "llama3.1": "Meta",
+    "phi3.5": "Microsoft",
+    "mistral": "Mistral AI",
+    "neural-chat": "Intel",
+    "codellama": "Meta",
+    "llava": "UW-Madison",
+    "gemma2": "Google",
+    "qwen2.5": "Alibaba",
+    "bnksys/yanolja-eeve-korean-instruct-10.8b": "Yanolja",
+}
 
-with tab2:
+embed_lists = {
+    "mxbai-embed-large": "MXBai-embed-large (334M)",
+    "nomic-embed-text": "Nomic-embed-text (137M)",
+    "all-minilm": "All-miniLM (23M)",
+}
+
+embed_providers = {
+    "mxbai-embed-large": "MixedBread AI",
+    "nomic-embed-text": "Nomic AI",
+    "all-minilm": "SBERT.net",
+}
+
+with st.sidebar:
+    st.markdown('<p class="section-header">MODEL MANAGEMENT</p>', unsafe_allow_html=True)
+
+    # Get available models
     dn_lists = ollama.list()['models']
     local_lists = []
+    local_model_keys = []
     for m in dn_lists:
-        # local_lists.append(f"***{m['name'].split(':')[0]}***")
         key = f"{m['model'].split(':')[0]}"
         value = lists_for_ollama.get(key, None)
         if value is not None:
             local_lists.append(value)
-    selected_list = st.radio("Make TangoChat smart!", local_lists)
-    # aliase_lists, local_lists = list_model(MODEL_ROOT)
-    # downloaded_dirs = []
-    # for basename, d in zip(aliase_lists, local_lists):
-    #     # basename = os.path.basename(d)
-    #     d = f'{d}/model.pth'
-    #     logger.info(d)
-    #     if os.path.isfile(d):
-    #         logger.info(f"{d} exists")
-    #         size = os.path.getsize(d)/(1024**3)
-    #         d = f'***{basename}*** | {d} (**{size:.2f} GB**)'
-    #     downloaded_dirs.append(d)
-    # selected_list = st.radio("Available models in your local inventory", downloaded_dirs)
-    # selected_model = selected_list.split("***")[1]
+            local_model_keys.append(key)
+
+    # Download Section
+    with st.expander("📥 Download Models", expanded=False):
+        st.markdown("**Select a model to download:**")
+
+        # Create columns for model cards
+        for model_key, model_name in lists_for_ollama.items():
+            provider = model_providers.get(model_key, "Unknown")
+            is_downloaded = model_key in local_model_keys
+
+            col1, col2 = st.columns([2.5, 1.2])
+            with col1:
+                st.markdown(f"**{model_name}**")
+                st.caption(f"Provider: {provider}")
+            with col2:
+                if is_downloaded:
+                    st.markdown("✅ Downloaded")
+                else:
+                    if st.button("⬇ DL", key=f"dl_{model_key}"):
+                        with st.status("Downloading...", expanded=True) as sts:
+                            start = time.time()
+                            ollama.pull(model_key)
+                            elapsed_time = time.time() - start
+                            st.write(f"✓ Completed in {elapsed_time:.2f}s")
+                        sts.update(label=f"✓ {model_name} downloaded", state="complete")
+                        st.rerun()
+            st.divider()
+
+    # Delete Section
+    with st.expander("🗑️ Delete Models", expanded=False):
+        if len(local_lists) > 0:
+            st.markdown("**Remove models to free up storage:**")
+            for idx, (model_name, model_key) in enumerate(zip(local_lists, local_model_keys)):
+                col1, col2 = st.columns([2.5, 1.2])
+                with col1:
+                    st.markdown(f"**{model_name}**")
+                with col2:
+                    if st.button("🗑 Del", key=f"del_{model_key}"):
+                        logger.info(f"Deleting model: {model_name}")
+                        ollama.delete(model_key)
+                        st.rerun()
+                if idx < len(local_lists) - 1:
+                    st.divider()
+        else:
+            st.info("No models installed")
+
+    st.markdown("---")
+
+    # RUN Section
+    st.markdown('<p class="section-header">RUN MODEL</p>', unsafe_allow_html=True)
+
     if len(local_lists) > 0:
-        apply_btn = st.button("Apply ", type="primary")
-        if apply_btn:
-            logger.info(f"Apply this LLM {selected_list} as Tango+Chat brain")
-            # selected_model = selected_list.split('***')[1]
-            for k,v in lists_for_ollama.items():
-                if v == selected_list:
-                    selected_model = k
-            st.session_state.brain['local_gen_name'] = selected_model
+        st.markdown("**Select active model:**")
+
+        current_model = st.session_state.brain.get('local_gen_name', None)
+        current_display = lists_for_ollama.get(current_model, None) if current_model else None
+
+        selected_idx = local_lists.index(current_display) if current_display in local_lists else 0
+
+        selected_model_name = st.selectbox(
+            "Active Model",
+            local_lists,
+            index=selected_idx,
+            label_visibility="collapsed",
+            key="model_selector"
+        )
+
+        # Find the key for selected model
+        selected_model_key = None
+        for k, v in lists_for_ollama.items():
+            if v == selected_model_name:
+                selected_model_key = k
+                break
+
+        if st.button("🚀 Apply Model", use_container_width=True):
+            logger.info(f"Applying model: {selected_model_name}")
+            st.session_state.brain['local_gen_name'] = selected_model_key
             st.session_state.brain['local_gen_obj'] = None
             st.session_state.rag = {
                 "active": False,
                 "url": None,
                 "embed": None,
-                "retreiver": None,}
+                "retreiver": None,
+            }
             st.rerun()
 
-with tab3:
-    remove_list = st.radio("Remove some models to spare storage", local_lists)
-    if len(local_lists) > 0:
-        # remove_model = remove_list.split("***")[1]
-        for k,v in lists_for_ollama.items():
-            if v == remove_list:
-                remove_model = k
-        remove_btn = st.button("Remove", type="primary")
-        if remove_btn:
-            logger.info(f"Remove this LLM:{remove_list} from local storage")
-            ollama.delete(remove_model)
-            st.rerun()
+        # Display current model status
+        if current_model:
+            st.markdown(f"""
+            <div class="model-info">
+                <strong>Active Model:</strong><br>
+                <span class="status-active">● {lists_for_ollama[current_model]}</span><br>
+                <small style="color: #757575;">Provider: {model_providers.get(current_model, 'Unknown')}</small>
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.warning("⚠️ No models available. Please download a model first.")
 
-with tab4:
-    model_name = st.session_state.brain['local_gen_name']
-    _model = ""
-    if model_name is not None:
-        _model = lists_for_ollama[model_name]
-    left, middle, right = st.columns(3)
-    with left:
-        st.subheader("Large Language Model")
-        st.text(f"TangoChat is now running by")
-        st.markdown(f"{_model}")
-    with middle:
-        st.subheader("Embedding Model")
-        embed_model = st.radio(
-            label="**:blue[VECTOR] to LLM ⇇ :red[TEXT] from URL**", 
-            options=list(embed_lists.keys()),
-            format_func=lambda x: embed_lists[x],
-            captions=captions_embed,
-        )
-        emb_btn = st.button("PULL & APPLY", type="primary")
-        if emb_btn:
-            with st.status("Downloading... ", expanded=True) as sts1:
+    st.markdown("---")
+
+    # RAG Section
+    st.markdown('<p class="section-header">RAG CONFIGURATION</p>', unsafe_allow_html=True)
+
+    with st.expander("🔧 Embedding Model", expanded=False):
+        st.markdown("**Select embedding model:**")
+        for emb_key, emb_name in embed_lists.items():
+            provider = embed_providers.get(emb_key, "Unknown")
+            col1, col2 = st.columns([2.5, 1.2])
+            with col1:
+                st.markdown(f"**{emb_name}**")
+                st.caption(f"Provider: {provider}")
+            with col2:
+                if st.button("⬇ Pull", key=f"emb_{emb_key}"):
+                    with st.status("Downloading...", expanded=True) as sts1:
+                        start = time.time()
+                        ollama.pull(emb_key)
+                        elapsed_time = time.time() - start
+                        st.write(f"✓ Completed in {elapsed_time:.2f}s")
+                    st.session_state.rag['active'] = True
+                    st.session_state.rag['embed'] = emb_key
+                    sts1.update(label=f"✓ {emb_name} ready", state="complete")
+                    st.rerun()
+            st.divider()
+
+        if st.session_state.rag['embed']:
+            st.success(f"✓ Using: {embed_lists[st.session_state.rag['embed']]}")
+
+    st.markdown("**Document Source:**")
+    _url = st.text_input(
+        "URL",
+        placeholder="e.g. https://github.com/ML-TANGO/TANGO",
+        label_visibility="collapsed",
+        key="rag_url_input"
+    )
+    st.session_state.rag['url'] = _url
+
+    if st.button("🔍 Retrieve Documents", use_container_width=True):
+        if st.session_state.rag.get('embed') and _url:
+            logger.info(f'Starting RAG retrieval from: {_url}')
+            with st.status("Retrieving documents...", expanded=False) as sts2:
                 start = time.time()
-                ollama.pull(embed_model)
-                elapsed_time = time.time()-start
-                st.write(f"Done({elapsed_time:.2f} sec).")
-            st.session_state.rag['active'] = True
-            st.session_state.rag['embed'] = embed_model
-            sts1.update(label=f"{embed_model} is successfully applied.", state="complete")
-        # if st.session_state.rag['active'] == True:
-        if st.session_state.rag['embed'] is not None:
-            st.text(f"TangoChat is now using {embed_model}.")
-    with right:
-        st.subheader("Retrieve Source")
-        _url = st.text_input(
-            label="**URL**",
-            placeholder = "e.g. https://github.com/ML-TANGO/TANGO",
-        )
-        st.session_state.rag['url'] = _url
-        
-         # 두 개 버튼을 나란히 두기 위해 columns 사용
-        col1, col2 = st.columns(2)
-        with col1:
-            rt_btn = st.button("Retrieve", type='primary')
-        with col2:
-            reinforced_rt_btn = st.button("Reinforced Retrieve", type='primary')
-        
-        
-        if rt_btn:
-            if st.session_state.rag['active'] and _url is not None:
-                logger.info(f'Retreive button clicked!!!')
-                with st.status("Retrieving... ", expanded=False) as sts2:
-                    start = time.time()
-                    import chromadb
-                    # chromadb.api.client.SharedSystemClient.clear_system_cache()
-                    _emb_model = st.session_state.rag['embed']
-                    logger.info(f'embeddign model: {_emb_model}')
-                    logger.info(f'url: {_url}')
-                    _retriever = load_and_retrieve_docs(_url, _emb_model)
-                    elapsed_time = time.time()-start
-                    st.write(f"Done({elapsed_time:.2f} sec).")
-                    st.session_state.rag['retriever'] = _retriever
-                    st.session_state['messages'] = start_state
-                    st.session_state.rag['active'] = True
-                    switch_ollama_model()
-                sts2.update(label=f"successfully retrieved.", state="complete")
-            else:
-                logger.warning(f'Failed to retreive URL: rag active? {st.session_state.rag["active"]}, url? {_url}')
-        
-        if reinforced_rt_btn:
-            if st.session_state.rag['active'] and _url is not None:
-                logger.info(f'Reinforced Retrieve button clicked!!!')
-                with st.status("Reinforced Retrieving... ", expanded=False) as sts3:
-                    start = time.time()
-                    _emb_model = st.session_state.rag['embed']
-                    _retriever = load_and_retrieve_docs_with_gpt(_url, _emb_model)
-                    elapsed_time = time.time()-start
-                    st.write(f"Done({elapsed_time:.2f} sec).")
-                    st.session_state.rag['retriever'] = _retriever
-                    st.session_state['messages'] = start_state
-                    st.session_state.rag['active'] = True
-                    switch_ollama_model()
-                sts3.update(label=f"reinforced retrieve complete!", state="complete")
-        
-        
-        if st.session_state.rag['active'] and _url is not None:
-            st.text(f"TangoChat retrieves from")
-            st.markdown(f"***{_url}***")
+                import chromadb
+                _emb_model = st.session_state.rag['embed']
+                logger.info(f'Embedding model: {_emb_model}')
+                logger.info(f'URL: {_url}')
+                _retriever = load_and_retrieve_docs_with_gpt(_url, _emb_model)
+                elapsed_time = time.time() - start
+                st.write(f"✓ Completed in {elapsed_time:.2f}s")
+                st.session_state.rag['retriever'] = _retriever
+                st.session_state['messages'] = start_state
+                st.session_state.rag['active'] = True
+                switch_ollama_model()
+            sts2.update(label="✓ Documents retrieved", state="complete")
+        else:
+            if not st.session_state.rag.get('embed'):
+                st.warning("⚠️ Please select an embedding model first")
+            if not _url:
+                st.warning("⚠️ Please enter a URL")
 
-with tab5:
-    finetune_list = st.radio("What would you finetune?", local_lists)
-    if len(local_lists) > 0:
-        finetune_model = finetune_list.split("***")[1]
-        finetune_btn = st.button("FineTune", type="primary")
-        if finetune_btn:
-            logger.info(f"Try improve this LLM:{finetune_list} through finetuning")
-
-with tab6:
-    deploy_list = st.radio("Select a LLM as TANGO+CHAT brain", local_lists)
-    if len(local_lists) > 0:
-        deploy_model = deploy_list.split("***")[1]
-        deploy_btn = st.button("Deploy", type="primary")
-        if deploy_btn:
-            logger.info(f"Try improve this LLM:{deploy_list} as the Tango+Chat brain")
+    # RAG Status Display
+    if st.session_state.rag['active'] and _url:
+        st.markdown(f"""
+        <div class="model-info">
+            <strong>RAG Status:</strong><br>
+            <span class="status-active">● Active</span><br>
+            <small style="color: #757575;">Source: {_url[:40]}...</small>
+        </div>
+        """, unsafe_allow_html=True)
 
 # apply a local model to TangoChat ---------------------------------------------
 def set_generator():
@@ -460,7 +596,8 @@ def set_generator():
     st.session_state['messages'] = start_state
     for msg in st.session_state.messages:
         if msg['role'] == 'system':
-            msg['content'] = f"Let's talk to **{model_name.upper()}** !!"
+            m_name = lists_for_ollama.get(model_name, model_name)
+            msg['content'] = f"**{m_name}** is now active and ready to chat!"
     return
 
 
@@ -486,6 +623,12 @@ def show_img_loader():
 if st.session_state.img_prompt == 'visible':
     show_img_loader()
 
+# title ------------------------------------------------------------------------
+st.markdown('<h1 class="main-title">TangoChat</h1>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #757575; margin-top: -1.5rem; margin-bottom: 2rem;">LLMOps Platform powered by ETRI & Prosolution</p>', unsafe_allow_html=True)
+
+st.divider()
+
 if st.session_state.rag == 'active':
     with st.sidebar:
         url_prompt = st.chat_input(
@@ -494,75 +637,67 @@ if st.session_state.rag == 'active':
             )
         st.session_state.rag['url'] = url_prompt
 
-st.divider()    
-
-# title ------------------------------------------------------------------------
-st.title(":rainbow[TangoChat]🔎 v1.0")
-
 # parsing messages -------------------------------------------------------------
 for msg in st.session_state.messages:
     with st.chat_message(msg['role']):
         if type(msg['content']) is list:
             for content in msg['content']:
-                # if content['type'] == 'image_url':
-                #     extension = (
-                #         content['image_url'].split(';base64')[0].split("image/")[1]
-                #     )
-                #     base64_repr = content['image_url'].split('base64,')[1]
-                #     st.image(base64.b64decode(base64_repr))
-                # else:
-                #     st.write(content['text'])
                 st.write(content)
         elif type(msg['content']) is dict:
-            # if msg['content']['type'] == 'image_url':
-            #     st.image(msg['content']['image_url'])
-            # else:
-            #     st.write(msg['content']['text'])
             st.write(msg['content'])
         elif type(msg['content']) is str:
-            st.write(msg['content'])
+            # Check if this is a user message with RAG context
+            if msg['role'] == 'user' and "Context:" in msg['content'] and "Question:" in msg['content']:
+                parts = msg['content'].split("Question:")
+                if len(parts) > 1:
+                    context_part = parts[0].replace("Context:", "").strip()
+                    question_part = parts[1].strip()
+                    st.write(question_part)
+                    with st.expander("📄 View RAG Context", expanded=False):
+                        st.markdown(context_part)
+                else:
+                    st.write(msg['content'])
+            else:
+                st.write(msg['content'])
         else:
             st.write(f"Unhandled content type: {type(msg['content'])}")
 
 # user message input -----------------------------------------------------------
 if prompt := st.chat_input():
-    question = prompt
+    original_question = prompt
+    rag_context = None
+
     if st.session_state.rag['active']:
         _retriever = st.session_state.rag.get('retriever', None)
         if _retriever is not None:
-            prompt = get_rag_formatted_prompt(_retriever, prompt)
+            formatted_prompt = get_rag_formatted_prompt(_retriever, prompt)
+            # Extract context from formatted prompt
+            if "Context:" in formatted_prompt and "Question:" in formatted_prompt:
+                parts = formatted_prompt.split("Question:")
+                if len(parts) > 1:
+                    context_part = parts[0].replace("Context:", "").strip()
+                    rag_context = context_part
+            prompt = formatted_prompt
         else:
             st.warning("RAG가 활성화되어 있지만 retriever가 없습니다. 먼저 Retrieve를 눌러주세요.")
-    #LLM증강 RAG추가할곳
+
     user_message = {
         "role": "user",
-        # "content": [{"type": "text",      # torch-style
-        #             "text": prompt}]
-        "content": prompt                   # ollama-style
+        "content": prompt
     }
 
     if user_message["content"].lower() == 'bye':
         logger.info("Completed\n")
         st.session_state.bye == True
         st.rerun()
-    
-    # if image_prompts:
-    #     for image_prompt in image_prompts:
-    #         extension = Path(image_prompt.name).suffix.strip(".")
-    #         image_bytes = image_prompt.getvalue()
-    #         base64_encoded = base64.b64encode(image_bytes).decode("utf-8")
-    #         user_message['content'].append(
-    #             {
-    #                 "type": "image_url",
-    #                 "image_url": f"data:image/{extension};base64,{base64_encoded}",
-    #             }
-    #         )
+
     st.session_state.messages.append(user_message)
 
     with st.chat_message("user"):
-        st.write(question)
-        # for img in image_prompts:
-        #     st.image(img)
+        st.write(original_question)
+        if rag_context:
+            with st.expander("📄 View RAG Context", expanded=False):
+                st.markdown(rag_context)
 
     # image_prompts = None
     reset_per_message_state()
