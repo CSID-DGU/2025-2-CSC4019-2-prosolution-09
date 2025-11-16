@@ -345,42 +345,57 @@ def switch_ollama_model():
 lists_for_ollama = {
             "llama3.2"      : "Llama 3.2 (3B)",
             "llama3.1"      : "Llama 3.1 (8B)",
-            "phi3.5"        : "Phi 3.5 (4B)",
+            "gpt-oss"       : "gpt-oss (20B)",
             "mistral"       : "Mistral 0.3 (7B)",
-            "neural-chat"   : "Neural-Chat (7B)",
-            "codellama"     : "CodeLlama (7B)",
+            "deepseek-r1"   : "deepseek-r1 (8B)",
+            "exaone3.5"     : "exaone 3.5 (7.8B)",
             "llava"         : "LLaVA 1.6 (8B)",
-            "gemma2"        : "Gemma 2 (9B)",
-            "qwen2.5"       : "Qwen 2.5 (7B)",
+            "gemma3"        : "Gemma 3 (4B)",
+            "qwen3-vl"      : "Qwen 3 (8B)",
             "bnksys/yanolja-eeve-korean-instruct-10.8b": "EEVE Korean (11B)",
         }
 
 model_providers = {
     "llama3.2": "Meta",
     "llama3.1": "Meta",
-    "phi3.5": "Microsoft",
+    "gpt-oss": "openai",
     "mistral": "Mistral AI",
-    "neural-chat": "Intel",
-    "codellama": "Meta",
+    "deepseek-r1": "deepseek",
+    "exaone3.5": "EXAONE",
     "llava": "UW-Madison",
-    "gemma2": "Google",
-    "qwen2.5": "Alibaba",
+    "gemma3": "Google",
+    "qwen3-vl": "Alibaba",
     "bnksys/yanolja-eeve-korean-instruct-10.8b": "Yanolja",
 }
 
 embed_lists = {
     "mxbai-embed-large": "MXBai-embed-large (334M)",
+    "embeddinggemma": "embeddinggemma (300M)",
+    "jeffh/intfloat-multilingual-e5-large-instruct:q8_0": "jeffh/intfloat-multilingual-e5-large-instruct:q8_0 (330B)",
+    "snowflake-arctic-embed": "snowflake-arctic-embed (335M)",
     "nomic-embed-text": "Nomic-embed-text (137M)",
     "all-minilm": "All-miniLM (23M)",
 }
 
 embed_providers = {
     "mxbai-embed-large": "MixedBread AI",
+    "embeddinggemma": "Google",
+    "intfloat-multilingual-e5-large-instruct": "intfloat",
+    "snowflake-arctic-embed": "Snowflake",
     "nomic-embed-text": "Nomic AI",
     "all-minilm": "SBERT.net",
 }
 
 with st.sidebar:
+    # Display logo at top of sidebar
+    import os
+    logo_path = os.path.join(os.path.dirname(__file__), 'prosolution.png')
+    if os.path.exists(logo_path):
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image(logo_path, use_container_width=True)
+        st.markdown("---")
+
     st.markdown('<p class="section-header">MODEL MANAGEMENT</p>', unsafe_allow_html=True)
 
     # Get available models
