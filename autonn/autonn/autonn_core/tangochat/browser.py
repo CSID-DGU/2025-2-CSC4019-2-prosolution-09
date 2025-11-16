@@ -696,7 +696,7 @@ for msg in st.session_state.messages:
         elif type(msg['content']) is str:
             # Check if this is a user message with RAG context
             if msg['role'] == 'user' and "Context:" in msg['content'] and "Question:" in msg['content']:
-                parts = msg['content'].split("Question:")
+                parts = msg['content'].split("Context:")
                 if len(parts) > 1:
                     #context_part = parts[0].replace("Context:", "").strip()
                     #question_part = parts[1].strip()
@@ -723,7 +723,7 @@ if prompt := st.chat_input():
             formatted_prompt = get_rag_formatted_prompt(_retriever, prompt)
             # Extract context from formatted prompt
             if "Context:" in formatted_prompt and "Question:" in formatted_prompt:
-                parts = formatted_prompt.split("Question:")
+                parts = formatted_prompt.split("Context:")
                 if len(parts) > 1:
                     question_part = parts[0].replace("Question:", "").strip()
                     context_part = parts[1].replace("Context:", "").strip()
