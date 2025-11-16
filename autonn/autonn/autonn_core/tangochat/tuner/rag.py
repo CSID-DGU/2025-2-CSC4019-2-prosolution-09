@@ -40,6 +40,7 @@ def load_and_retrieve_docs(url, emb_model):
     return vectorstore.as_retriever()
 
 def load_and_retrieve_docs_with_gpt(url, emb_model):
+    key=""
     
     client = OpenAI(api_key = key)
     
